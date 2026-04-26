@@ -40,4 +40,4 @@ High-Level Scenario Test - Expected Outcome
 
 2.4 
 src/controllers/usercontroller.py      24      5    79%   42-46
-The test suite achieved 79% statement coverage for usercontroller.py. Thas means that most of the code in the file was executed by the tests. The uncovered lines are lines 42–46, which belong to the update method. Since the assignment focuses on testing get_user_by_email, these uncovered lines are outside the scope of this test suite. Therefore, the coverage is considered sufficient for evaluating the tested method.
+The test suite achieved 79% statement coverage for usercontroller.py. Thas means that most of the code in the file was executed by the tests. The uncovered lines are lines 42–46, which belong to the update method. Since the assignment focuses on testing get_user_by_email, these uncovered lines are outside the scope of this test suite. Therefore, the coverage is considered sufficient for evaluating the tested method. 
