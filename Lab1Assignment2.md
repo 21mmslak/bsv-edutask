@@ -33,7 +33,7 @@ High-Level Scenario Test - Expected Outcome
 | 8 | `None` as input | `None` | Raises `Exception` or `TypeError` |
 | 9 | Database failure | Valid email, DB is down | Raises `Exception` |
 
-2.2 https://github.com/21mmslak/bsv-edutask/backend/test/Controllers/test_usercontroller.py
+2.2 [https://github.com/21mmslak/bsv-edutask/backend/test/Controllers/test_usercontroller.py](https://github.com/21mmslak/bsv-edutask/blob/master/backend/test/Controllers/test_usercontroller.py)
 
 2.3
 ![alt text](image.png)
