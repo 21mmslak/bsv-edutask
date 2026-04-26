@@ -1,3 +1,7 @@
+## Work distribution
+
+This assignment was completed during a video chat session between the group members where they discussed and worked together on completing it.
+
 ## 1
 #### 1.1
 Step 1: Identify actions and expected outcomes.
