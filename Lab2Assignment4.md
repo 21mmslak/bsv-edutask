@@ -1,5 +1,9 @@
 # Assignment 4: GUI Testing
 
+## Work distribution
+
+This assignment was completed during a video chat session between the group members where they discussed and worked together on completing it.
+
 ## Deliverable 1
 
 ### R8UC1
@@ -187,3 +191,27 @@ Reading the scenario, the expected outcome of _deleting todo item_ is successful
 | TC-R8UC3-3 | Click delete on existing todo item         | Todo item removed from todo list       |
 
 ## Deliverable 2
+https://github.com/21mmslak/bsv-edutask/tree/master/frontend/cypress/e2e/r8_todo.cy.js
+
+## Deliverable 3
+![alt text](image-4.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
+
+The Cypress E2E test execution for requirement R8 resulted in 10 executed test cases, where 6 passed and 4 failed. The failing tests revealed both implementation defects and UI interaction issues. TC-R8UC1-1 confirmed a defect where the “Add” button was not disabled when the todo description was empty, violating the specified requirement. Additional failures in R8UC2 and R8UC3 were caused by Cypress being unable to properly interact with toggle and delete elements, indicating potential problems with element visibility or interaction handling in the GUI.
+
+## 2. Declarative vs. imperative UI Testing
+1. Declarative and Imperative UI Test Case Implementation
+
+Imperative UI testing means that the test explicitly describes every step and interaction that should be performed in the user interface. The test specifies how the system should be tested by detailing actions such as clicking buttons, entering text, navigating pages, and verifying results step by step. Frameworks such as Cypress commonly use this approach. Imperative tests provide detailed control over the execution flow but often become verbose and tightly coupled to the implementation of the UI.
+
+Declarative UI testing focuses on describing the expected behavior or final state of the application instead of every interaction required to reach it. The test specifies what should be true, while the framework handles much of the underlying interaction logic. Declarative tests are usually shorter, easier to read, and less dependent on specific implementation details. This approach emphasizes outcomes and user-visible behavior rather than exact sequences of actions.
+
+2. Discussion of the Most Applicable Approach in UI Testing
+
+A declarative approach is generally more suitable for UI testing because it improves readability, maintainability, and robustness. Since graphical user interfaces often change during development, declarative tests are less likely to break when layouts or implementation details are modified. They also align more closely with user requirements because they focus on expected behavior rather than internal mechanics.
+
+However, imperative testing is still valuable, especially in end-to-end testing scenarios where precise control over user interactions is required. Complex workflows, navigation flows, and interaction timing are often easier to express imperatively.
+
+In practice, modern UI testing commonly combines both approaches. Imperative commands are used to simulate user interactions, while declarative assertions are used to verify expected system behavior and application state.
