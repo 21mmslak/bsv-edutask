@@ -19,72 +19,44 @@ In unit test mocking is used to make sure that the unit under test is completely
 For integration tests, as you are testing that two modules are communicating with each other, you mock out transitive dependencies they may have. Say that we are testing the integration between Foo and Bar, but Bar also dependends on Baz, then we mock out Baz to ensure that we are only testing the two modules we are supposed to.
 
 ## 2. Integration Testing
-
 ### 2.1
+**Step 1 – Oracle**
+The oracle is the DAO's create method specification and the MongoDB validator schema,
+which defines that:
+- A document compliant with the schema is inserted and returns an object with an _id
+- A document violating the schema raises a WriteError
 
-#### TC1: Valid input
+**Step 2 – Conditions**
+- Required fields present        [yes / no]
+- prop1 (string) correct type    [yes / no]
+- prop2 (array) correct type     [yes / no]
+- prop2 items are unique         [yes / no]
+- prop2 items are strings        [yes / no]
+- prop3 (bool) correct type      [yes / no] (optional field)
 
-```json
-{
-  "prop1": "Foo",
-  "prop2": ["foo", "bar"],
-  "prop3": true
-}
-```
+**Step 3 – Test cases**
 
-#### TC2: Missing required field
+| # | Required fields | prop1 type | prop2 type | Unique items | Item types | prop3 type |
+|---|----------------|------------|------------|--------------|------------|------------|
+| 1 | yes            | string     | array      | yes          | string     | bool       |
+| 2 | no             | –          | –          | –            | –          | –          |
+| 3 | yes            | string     | string     | –            | –          | –          |
+| 4 | yes            | string     | array      | no           | string     | –          |
+| 5 | yes            | string     | array      | yes          | mixed      | –          |
+| 6 | yes            | int        | array      | yes          | string     | –          |
+| 7 | yes            | string     | array      | yes          | string     | int        |
 
-```json
-{
-  "prop1": "Foo"
-}
-```
+**Step 4 – Expected outcomes**
 
-#### TC3: Wrong BSON type for array field
-
-```json
-{
-  "prop1": "Foo",
-  "prop2": "Bar"
-}
-```
-
-#### TC4: Non-unique array items
-
-```json
-{
-  "prop1": "Foo",
-  "prop2": ["foo", "foo"]
-}
-```
-
-#### TC5: Wrong BSON type in array
-
-```json
-{
-  "prop1": "Foo",
-  "prop2": ["foo", 42]
-}
-```
-
-#### TC6: Wrong BSON type for string
-
-```json
-{
-  "prop1": 42,
-  "prop2": ["foo", "bar"]
-}
-```
-
-#### TC7: Wrong BSON type for boolean
-
-```json
-{
-  "prop1": "Foo",
-  "prop2": ["foo", "bar"],
-  "prop3": 42
-}
-```
+| # | Expected outcome                  |
+|---|-----------------------------------|
+| 1 | Document inserted, _id returned   |
+| 2 | Raises WriteError                 |
+| 3 | Raises WriteError                 |
+| 4 | Raises WriteError                 |
+| 5 | Raises WriteError                 |
+| 6 | Raises WriteError                 |
+| 7 | Raises WriteError                 |
 
 ### 2.2
 

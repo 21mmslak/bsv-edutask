@@ -40,49 +40,59 @@ Both BVA and EP are black-box test design techniques used to reduce the number o
 BVA
 | Boundary | Values to test |
 |----------|----------------|
-| Limit 0 | -1,0,1|
-| Limit 18 | 17,18,19|
-| Limit 120 | 119,120,121 |
+| Limit 0  | -1, 0, 1       |
+| Limit 18 | 17, 18, 19     |
+| Limit 120| 119, 120, 121  |
 
 EP
-| Partition   | Range    | Expected Outcome       |
-| ------ | ----- | ------- |
-| Impossible (low) | x < 0 | Invalid |
-| Impossibel (high) | x > 120 | Invalid|
-| Underage | 0 ≤ x < 18 | Underage|
-| Valid | 18 ≤ x ≤ 120 | Valid |
+| Partition         | Range        | Example Value | Expected Outcome |
+| ----------------- | ------------ | ------------- | ---------------- |
+| Impossible (low)  | x < 0        | -5            | Invalid          |
+| Impossible (high) | x > 120      | 130           | Invalid          |
+| Underage          | 0 ≤ x < 18   | 10            | Underage         |
+| Valid             | 18 ≤ x ≤ 120 | 45            | Valid            |
 
 ## 3
-#### 3.1
-Actions:
-- Open the door from the inside
-- Try to open the door with an invalid card
-- Try to open the door with a valid card held for less than 2 seconds (e.g. 1 second)
-- Try to open the door with a valid card held for exactly 2 seconds
-- Try to open the door with a valid card held for more than 2 seconds (e.g. 3 seconds)
-- Porter unlocks the door remotely
 
-Conditions: 
-- Door is locked
-- Door is unlocked (by porter)
-- Door is unlocked by valid card held for 2 seconds or more
-- Card is valid
-- Card is invalid
-- Card held for less than 2 seconds
-- Card held for 2 seconds or more
+#### 3.1
+Conditions:
+- Opening from inside            [yes / no]
+- Porter unlocks door            [yes / no]
+- Company card is valid          [yes / no]
+- Card held for ≥ 2 seconds      [yes / no]
+
+Action:
+- Open door                      [successful / unsuccessful]
 
 #### 3.2
-x = impossible, ✓ = door opens, ✗ = door stays closed
-
-| | Open from inside | Invalid card | Valid card < 2 sec | Valid card = 2 sec | Valid card > 2 sec | Porter unlocks |
-|---|---|---|---|---|---|---|
-| Door locked | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
-| Door unlocked by porter | ✓ | ✓ | ✓ | ✓ | ✓ | x |
+| # | From inside | Porter unlocks | Valid card | Held ≥ 2 sec | Open door |
+|---|-------------|----------------|------------|--------------|-----------|
+| 1 | yes         | yes            | yes        | yes          | ✓         |
+| 2 | yes         | yes            | yes        | no           | ✓         |
+| 3 | yes         | yes            | no         | yes          | ✓         |
+| 4 | yes         | yes            | no         | no           | ✓         |
+| 5 | yes         | no             | yes        | yes          | ✓         |
+| 6 | yes         | no             | yes        | no           | ✓         |
+| 7 | yes         | no             | no         | yes          | ✓         |
+| 8 | yes         | no             | no         | no           | ✓         |
+| 9 | no          | yes            | yes        | yes          | ✓         |
+| 10 | no         | yes            | yes        | no           | ✓         |
+| 11 | no         | yes            | no         | yes          | ✓         |
+| 12 | no         | yes            | no         | no           | ✓         |
+| 13 | no         | no             | yes        | yes          | ✓         |
+| 14 | no         | no             | yes        | no           | x         |
+| 15 | no         | no             | no         | yes          | x         |
+| 16 | no         | no             | no         | no           | x         |
 
 #### 3.3
-x = impossible
+Rows 1–8 collapse: when opening from inside, all other conditions are irrelevant.
+Rows 9–12 collapse: when porter unlocks, card conditions are irrelevant.
+Rows 15–16 collapse: invalid card makes held time irrelevant.
 
-| | Open from inside | Invalid card | Valid card < 2 sec | Valid card = 2 sec | Valid card > 2 sec | Porter unlocks |
-|---|---|---|---|---|---|---|
-| Door locked | Door opens | Door stays closed | Door stays closed | Door opens | Door opens | Door opens |
-| Door unlocked by porter | Door opens | Door opens | Door opens | Door opens | Door opens | x |
+| # | From inside | Porter unlocks | Valid card | Held ≥ 2 sec | Expected outcome |
+|---|-------------|----------------|------------|--------------|------------------|
+| 1 | yes         | –              | –          | –            | Successful       |
+| 2 | no          | yes            | –          | –            | Successful       |
+| 3 | no          | no             | yes        | yes          | Successful       |
+| 4 | no          | no             | yes        | no           | Unsuccessful     |
+| 5 | no          | no             | no         | –            | Unsuccessful     |
