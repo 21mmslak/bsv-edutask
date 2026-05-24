@@ -6,32 +6,46 @@ This assignment was completed during a video chat session between the group memb
 
 1.2 Mocking fulfills two purposes in unit testing: isolation and control. By replacing dependencies like databases or external services with fakes, you isolate the unit under test so that failures can only originate from the code you're actually testing. Mocking also gives you full control over what those dependencies return, making tests deterministic and reliable.
 
-2.1 The oracle used is the method's docstring, which defines 
-the expected behavior for valid/invalid emails and database outcomes.
+2.1
+**Step 1 – Oracle**
+The oracle is the method's docstring, which specifies:
+- Returns a user object if exactly one match is found
+- Returns None if no user is found
+- Raises ValueError for invalid email format
+- Raises Exception on database failure
 
-For testing `get_user_by_email` we will use followsing test methods:
-Equivalence partitioning + limit value analysis on the email validation
-| Partition | Example | Expected |
-|-----------|---------|----------|
-| Valid email | test@ex.ex | Returns user |
-| Missing @ | testex.ex | ValueError |
-| Missing local-part | @ex.ex | ValueError |
-| Missing domain | test@ | ValueError |
-| Empty string | "" | ValueError |
+**Step 2 – Conditions**
+- Email format validity       [valid / invalid]
+- Number of users found in DB [0 / 1 / multiple]
+- Database availability       [up / down]
 
-High-Level Scenario Test - Expected Outcome
+**Step 3 – Test cases (EP + BVA on conditions)**
 
-| # | Scenario | Input | Expected Outcome |
-|---|---|---|---|
-| 1 | Valid email, user exists | `"test@example.com"` | Returns the user object |
-| 2 | Valid email, no user found | `"noone@example.com"` | Returns `None` |
-| 3 | Valid email, multiple users found | `"dup@example.com"` | Returns first user |
-| 4 | Invalid email – missing `@` | `"testexample.com"` | Raises `ValueError` |
-| 5 | Invalid email – missing local-part | `"@example.com"` | Raises `ValueError` |
-| 6 | Invalid email – missing domain | `"test@"` | Raises `ValueError` |
-| 7 | Empty string | `""` | Raises `ValueError` |
-| 8 | `None` as input | `None` | Raises `Exception` or `TypeError` |
-| 9 | Database failure | Valid email, DB is down | Raises `Exception` |
+| # | Email format | DB result        | DB available |
+|---|-------------|------------------|--------------|
+| 1 | valid       | 1 user found     | yes          |
+| 2 | valid       | 0 users found    | yes          |
+| 3 | valid       | multiple found   | yes          |
+| 4 | valid       | –                | no           |
+| 5 | invalid (missing @)    | –       | yes          |
+| 6 | invalid (missing local)| –       | yes          |
+| 7 | invalid (missing domain)| –      | yes          |
+| 8 | empty string           | –       | yes          |
+| 9 | None                   | –       | yes          |
+
+**Step 4 – Expected outcomes**
+
+| # | Expected outcome         |
+|---|--------------------------|
+| 1 | Returns user object      |
+| 2 | Returns None             |
+| 3 | Returns first user       |
+| 4 | Raises Exception         |
+| 5 | Raises ValueError        |
+| 6 | Raises ValueError        |
+| 7 | Raises ValueError        |
+| 8 | Raises ValueError        |
+| 9 | Raises TypeError/Exception|
 
 2.2 [https://github.com/21mmslak/bsv-edutask/backend/test/Controllers/test_usercontroller.py](https://github.com/21mmslak/bsv-edutask/blob/master/backend/test/Controllers/test_usercontroller.py)
 
