@@ -28,6 +28,8 @@ Deliberately introduce failures into the system e.g. kill a process, cut a netwo
 
 ## 2. Static testing
 
+## 2. Static testing
+
 ### 1. An explanation of static test techniques as opposed to dynamic test techniques.
 Static testing techniques analyze the software without executing it. Instead of running the code you inspect artifacts such as source code, documentation, or architecture diagrams directly. The goal is to find defects, structural weaknesses, violations of standards early. Before the system is even runnable. Examples include code reviews, walkthroughs, and static analysis tools.
 
@@ -36,18 +38,21 @@ The key distinction is therefore: static = inspect without running, dynamic = ob
 
 ### 2. A static code review of the EduTask system and an evaluation of the systems extensibility in regard to the proposed change.
 Overview of the architecture:
-The backend follows a layered structure: blueprints handle HTTP routing, controllers contain business logic, and DAOs handle database access. The DAO class is generic and reusable it accepts any collection name and dynamically loads the corresponding JSON schema validator. This is a well-designed, extensible foundation.
+The system consists of three layers: a React frontend, a Flask backend, and a MongoDB database. The backend follows a layered structure: blueprints handle HTTP routing, controllers contain business logic, and DAOs handle database access. The DAO class is generic and reusable — it accepts any collection name and dynamically loads the corresponding JSON schema validator. This is a well-designed, extensible foundation.
 
 How YouTube videos are currently handled:
-A task is created in TaskController.create(), which expects a url field in the input data. This URL is immediately passed to self.videos_dao.create({'url': data['url']}), creating a video document and storing its ObjectId as a reference on the task. When a task is retrieved, populate_task() resolves this reference by fetching the document from videos_dao. The video.json validator defines the schema for this collection, requiring only a url field.
+A task is created in TaskController.create(), which expects a url field in the input data. This URL is immediately passed to self.videos_dao.create({'url': data['url']}), creating a video document and storing its ObjectId as a reference on the task. When a task is retrieved, populate_task() resolves this reference by fetching the document from videos_dao. The video.json validator defines the schema for this collection, requiring only a url field. On the frontend, DetailView.js renders the resource by constructing a YouTube embed URL and passing it to an <iframe> element. The task creation form presents a single URL input field, labelled and scoped to YouTube.
 
 Extensibility evaluation:
-The DAO layer is extensible. Adding a new article collection would only require creating an article.json validator no changes to DAO itself would be needed, which aligns well with the extensibility definition.However, the controller layer is not extensible. The following concrete issues were identified:
-* TaskController.__init__() takes videos_dao as an explicit, hardcoded parameter. There is no generic resource_dao concept adding Medium articles would require adding another DAO parameter alongside it.
+The DAO layer is extensible. Adding a new article collection would only require creating an article.json validator — no changes to the DAO itself would be needed, which aligns well with the extensibility definition. However, the controller and frontend layers are not extensible. The following concrete issues were identified:
+
+* TaskController.__init__() takes videos_dao as an explicit, hardcoded parameter. There is no generic resource_dao concept — adding Medium articles would require adding another DAO parameter alongside it.
 * TaskController.create() unconditionally calls self.videos_dao.create(...) with no branching or abstraction for resource type. Someone would need to modify this method directly to support articles.
 * populate_task() always fetches from videos_dao, meaning it would also need to be modified to determine which DAO to use depending on resource type.
 * There is no type field on the task or resource model, so there is no way to distinguish a YouTube video from a Medium article at runtime without restructuring the data model.
 * The blueprint taskblueprint.py passes url directly with no concept of resource type, meaning the API contract would also need to change.
+* DetailView.js constructs a YouTube-specific embed URL and renders it inside an <iframe>. A Medium article is not embeddable in this way, meaning the rendering logic would need to be replaced entirely rather than extended.
+* The task creation form has no resource type selector. There is no way for the user to indicate whether they are adding a video or an article, meaning the entire creation flow would need to be restructured to accommodate a second resource type.
 
 Conclusion:
-The system has low extensibility with respect to this proposed change. While the data access layer is clean and generic, the absence of a resource abstraction in the controller means that adding Medium articles would require modifications in multiple places across existing, working code rather than additions in isolation. A more extensible design would introduce a generic Resource model with a type field and delegate resource-specific behavior through a factory or strategy pattern, keeping TaskController unmodified when new resource types are added.
+The system has low extensibility with respect to this proposed change. While the data access layer is clean and generic, the absence of a resource abstraction in the controller and the YouTube-specific rendering in the frontend mean that adding Medium articles would require modifications in multiple places across existing, working code rather than additions in isolation. A more extensible design would introduce a generic Resource model with a type field, delegate resource-specific backend behavior through a factory or strategy pattern, and render resources through a type-driven component in the frontend — keeping TaskController and DetailView unmodified when new resource types are added.
